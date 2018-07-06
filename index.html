@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>normun</title>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="app.css">
+  </head>
+  <body>
+    <!-- -->
+    <div class="underlay"></div>
+    <div id="app" @click="hide_menus">
+      <div class="settings container" :class="{show:show_settings}" @click.stop="show_menu = false">
+        <ul class="nav nav-tabs">
+          <li role="presentation"
+            v-for="mode in modes"
+            :class="{active:active_settings == mode.key}"
+            @click.stop="active_settings = mode.key"
+          ><a><i class="glyphicon" :class="'glyphicon-' + mode.icon"></i> {{ mode.name }}</a></li>
+        </ul>
+        <div v-if="active_settings == 'mapping'">
+          <h3>Input / Source</h3>
+          <chooser name="red" :value="config.source_red" :options="geo_opts" :assigned="source_assigned" @change="update('config.source_red', $event);"></chooser>
+          <chooser name="green" :value="config.source_green" :options="geo_opts" :assigned="source_assigned" @change="update('config.source_green', $event);"></chooser>
+          <chooser name="blue" :value="config.source_blue" :options="geo_opts" :assigned="source_assigned" @change="update('config.source_blue', $event);"></chooser>
+          <chooser name="alpha" :value="config.source_alpha" :options="geo_opts" :assigned="source_assigned" @change="update('config.source_alpha', $event);"></chooser>
+          <h3>Output / Target</h3>
+          <chooser name="x" :value="config.target_x" :options="color_opts" :assigned="target_assigned" :class="{unavailable:!available_x}" @change="update('config.target_x', $event);"></chooser>
+          <chooser name="y" :value="config.target_y" :options="color_opts" :assigned="target_assigned" :class="{unavailable:!available_y}" @change="update('config.target_y', $event);"></chooser>
+          <chooser name="z" :value="config.target_z" :options="color_opts" :assigned="target_assigned" :class="{unavailable:!available_z}" @change="update('config.target_z', $event);"></chooser>
+          <!--
+          <chooser name="height" :value="config.target_h" :options="color_opts" :assigned="target_assigned" :class="{unavailable:!available_height}" @change="update('config.target_h', $event);"></chooser>
+          <chooser name="spec" :value="config.target_spec" :options="color_opts" :assigned="target_assigned" :class="{unavailable:!available_spec}" @change="update('config.target_spec', $event);"></chooser>
+          -->
+          <h3>DirectX / OpenGL</h3>
+          <chooser name="convert (invert y)" :value="config.invert_y" :options="bool_opts" :require="true" @change="update('config.invert_y', $event);"></chooser>
+        </div>
+        <div v-if="active_settings == 'normalize'">
+          <h3>Input Channels</h3>
+          <chooser name="channel 1" :value="config.normalize_ch1" :options="color_opts" :assigned="normalize_assigned" @change="update('config.normalize_ch1', $event);"></chooser>
+          <chooser name="channel 2" :value="config.normalize_ch2" :options="color_opts" :assigned="normalize_assigned" @change="update('config.normalize_ch2', $event);"></chooser>
+          <chooser name="channel 3" :value="config.normalize_ch3" :options="color_opts" :assigned="normalize_assigned" @change="update('config.normalize_ch3', $event);"></chooser>
+          <h3>Output Channel</h3>
+          <chooser name="generate / derive" :value="config.normalize_target" :options="color_opts" :assigned="normalize_assigned" @change="update('config.normalize_target', $event);"></chooser>
+        </div>
+        <div v-if="active_settings == 'mix'"><!-- NYI --></div>
+        <div id="version" :class="'show'">v{{ version_string }}</div>
+      </div>
+      <div class="viewer"><canvas></canvas></div>
+      <div class="tools" @click.stop.prevent>
+        <div title="Menu" @click.stop="show_menu = !show_menu"><i class="glyphicon glyphicon-menu-hamburger"></i></div>
+        <div title="Settings" @click.stop="show_settings = !show_settings"><i class="glyphicon glyphicon-cog"></i></div>
+        <div :title="'Mode: ' + modes_obj[config.mode].name" @click.stop="mode_cycle"><i class="glyphicon" :class="'glyphicon-' + modes_obj[config.mode].icon"></i></div>
+        <ul class="dropdown-menu settings-menu" :class="{show:show_menu}">
+          <li><a href="#" :class="{enabled:config.export_naming === 'overwrite'}" @click.stop="update('config.export_naming', 'overwrite');">Overwrite Original TGA <i class="glyphicon glyphicon-ok"></i></a></li>
+          <li><a href="#" :class="{enabled:config.export_naming === 'suffix'}" @click.stop="update('config.export_naming', 'suffix');">Suffix If Original TGA <i class="glyphicon glyphicon-ok"></i></a></li>
+          <li><a href="#" :class="{enabled:config.export_naming === 'suffix_all'}" @click.stop="update('config.export_naming', 'suffix_all');">Suffix All Exported Filenames <i class="glyphicon glyphicon-ok"></i></a></li>
+          <li role="separator" class="divider"></li>
+          <li><a href="#" :class="{enabled:config.save_config}" @click.stop="update('config.save_config', !config.save_config);">Save Configuration on Quit <i class="glyphicon glyphicon-ok"></i></a></li>
+        </ul>
+      </div>
+    </div>
+    <script src="node_modules/vue/dist/vue.js"></script>
+    <script src="node_modules/three/three.js"></script>
+    <script src="DDSLoader.js"></script>
+    <script src="TGALoader.js"></script>
+    <script>
+      require('./ui.js')
+    </script>
+  </body>
+</html>
