@@ -1,0 +1,48 @@
+{
+  "name": "normun",
+  "version": "1.0.0",
+  "description": "Convert normal maps",
+  "repository": "ndixUR/normun",
+  "author": "ndix UR",
+  "main": "main.js",
+  "license": "BSD-2-Clause",
+  "scripts": {
+    "postinstall": "install-app-deps",
+    "start": "electron . --enable-logging",
+    "dist": "build -mw --x64"
+  },
+  "build": {
+    "appId": "normun",
+    "compression": "maximum",
+    "mac": {
+      "category": "public.app-category.graphics-design"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "win": {
+      "target": "NSIS"
+    }
+  },
+  "devDependencies": {
+    "electron": "^1.6.17",
+    "electron-builder": "^19.15.5"
+  },
+  "dependencies": {
+    "decode-dxt": "^1.0.1",
+    "bootstrap": "^3.3.7",
+    "vue": "^2.5.16",
+    "three.js": "^0.77.1"
+  }
+}
